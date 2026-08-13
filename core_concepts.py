@@ -53,7 +53,23 @@ def demo_streaming():
         print(chunk, end="", flush=True)
     print()
 
+def demo_schema_inspection():
+    prompt = ChatPromptTemplate.from_template(
+                "Summarize the following text: {text}"
+            )
+    model = ChatOpenRouter(model="openrouter/free", temperature=0.7)
+    parser = StrOutputParser()
+        
+    chain = prompt | model | parser
+
+    input_schema = chain.input_schema.model_json_schema()
+    output_schema = chain.output_schema.model_json_schema()
+
+    print(f"Input Schema: {input_schema}")
+    print(f"Output Schema: {output_schema}")
+
 if __name__ == "__main__":
     # demo_basic_chain()
     # demo_batch_execution()
-    demo_streaming()
+    # demo_streaming()
+    demo_schema_inspection()
