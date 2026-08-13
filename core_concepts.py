@@ -68,8 +68,22 @@ def demo_schema_inspection():
     print(f"Input Schema: {input_schema}")
     print(f"Output Schema: {output_schema}")
 
+def lcel_chain():
+    prompt = ChatPromptTemplate.from_template(
+        "Generate a one-liner marketing tagline for product name '{product_name}' and target audience '{target_audience}'"
+    )
+    model = ChatOpenRouter(model="openrouter/free", temperature=0.7)
+    parser = StrOutputParser()
+
+    chain = prompt | model | parser
+
+    result = chain.invoke({"product_name": "Autonomous AI CFO", "target_audience": "Fintech Corps"})
+    print(f"Marketing Tagline: {result}")
+
+
 if __name__ == "__main__":
     # demo_basic_chain()
     # demo_batch_execution()
     # demo_streaming()
-    demo_schema_inspection()
+    # demo_schema_inspection()
+    lcel_chain()
