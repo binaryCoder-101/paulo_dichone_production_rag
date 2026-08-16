@@ -81,7 +81,38 @@ def demo_multiturn():
 
     print(messages)
 
+def exercise_multi_model():
+    prompt = ChatPromptTemplate.from_template(
+        "Explain the following concept briefly: {topic}"
+    )
+
+    models = {
+        "gpt-40-mini": init_chat_model(
+                    model="gpt-4o-mini",
+                    temperature=0.7,
+                    streaming=True,
+                ),
+        "gpt-4o": init_chat_model(
+                    model="gpt-4o",
+                    temperature=0.7,
+                    streaming=True,
+                ),
+        "claude-sonnet-4-5-20250929": init_chat_model(
+                    model="claude-sonnet-4-5-20250929",
+                    temperature=0.7,
+                    streaming=True,
+                )
+    }
+
+    parser = StrOutputParser()
+
+    for model_name, model in models.items():
+        chain = prompt | model | parser
+        response = chain.invoke({"topic": "Back tracking"})
+        print(f"Response from {model_name}: {response}\n\n")
+
 if __name__ == "__main__":
     # demo_init_chat_model()
     # demo_model_comparison()
-    demo_multiturn()
+    # demo_multiturn()
+    exercise_multi_model()
