@@ -28,5 +28,35 @@ def demo_init_chat_model():
 
     print(result)
 
+def demo_model_comparison():
+    prompt = "Explain recursion in one sentence"
+
+    models = {
+        "gpt-40-mini": init_chat_model(
+            model="gpt-4o-mini",
+            temperature=0.7,
+            streaming=True,
+        ),
+        "gpt-4o": init_chat_model(
+            model="gpt-4o",
+            temperature=0.7,
+            streaming=True,
+        ),
+    }
+
+    if os.getenv("ANTHROPIC_API_KEY"):
+        models["claude-sonnet-4-5-20250929"] = init_chat_model(
+            model="claude-sonnet-4-5-20250929",
+            temperature=0.7,
+            streaming=True,
+        )
+
+    print(f"Prompt: {prompt}\n")
+
+    for model_name, model in models.items():
+        response = model.invoke(prompt)
+        print(f"Response from {model_name}: {response.content}\n\n")
+
 if __name__ == "__main__":
-    demo_init_chat_model()
+    # demo_init_chat_model()
+    demo_model_comparison()
