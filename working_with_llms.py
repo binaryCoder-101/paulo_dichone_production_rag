@@ -4,6 +4,7 @@ from langchain_openai import ChatOpenAI
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 from langchain.chat_models import init_chat_model
+from langchain_core.messages import HumanMessage, SystemMessage
 
 load_dotenv()
 
@@ -57,6 +58,30 @@ def demo_model_comparison():
         response = model.invoke(prompt)
         print(f"Response from {model_name}: {response.content}\n\n")
 
+def demo_multiturn():
+    model = init_chat_model(
+        model="claude-sonnet-4-5-20250929",
+        temperature=0.7,
+        streaming=True,
+    )
+
+    messages = [
+        SystemMessage(content="You are a pirate. Always answer like one!"),
+        HumanMessage(content="What's the weather like today?")
+    ]
+
+    response = model.invoke(messages)
+    print(f"Response from the Pirate: {response.content}")
+
+    messages.append(response)
+    messages.append(HumanMessage(content="What about tomorrow?"))
+
+    response = model.invoke(messages)
+    print(f"Response from the Pirate: {response.content}")
+
+    print(messages)
+
 if __name__ == "__main__":
     # demo_init_chat_model()
-    demo_model_comparison()
+    # demo_model_comparison()
+    demo_multiturn()
