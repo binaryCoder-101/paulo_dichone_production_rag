@@ -36,3 +36,23 @@ messages = prompt.format_messages(
 )
 
 print(messages)
+
+# Message Types:
+
+from langchain_core.messages import (
+    AIMessage,
+    ChatMessage,
+    HumanMessage,
+    SystemMessage,
+    ToolMessage,
+)
+
+messages = [
+    HumanMessage(content="Hello!"),
+    AIMessage(content="Hi there! How can I assist you today?"),
+    SystemMessage(content="This is a system message."),
+    ToolMessage(content="Tool executed successfully.", tool_call_id="call_123"),
+    ChatMessage(role="user", content="This is a general chat message."),
+]
+
+print(messages)
