@@ -56,3 +56,36 @@ messages = [
 ]
 
 print(messages)
+
+# Few Shot Message
+
+from langchain_core.prompts import FewShotChatMessagePromptTemplate
+
+examples = [
+    {"input": "happy", "output": "sad"},
+    {"input": "tall", "output": "short"},
+]
+
+example_prompt = ChatPromptTemplate.from_messages(
+    [
+        ("human", "{input}"),
+        ("ai", "{output}"),
+    ]
+)
+
+fewshot_prompt = FewShotChatMessagePromptTemplate(
+    example_prompt=example_prompt,
+    examples=examples,
+)
+final_prompt = ChatPromptTemplate.from_messages(
+    [
+        ("system", "Infer from given pattern and answer"),
+        fewshot_prompt,
+        ("human", "{input}")
+    ]
+)
+
+model = init_chat_model(model="gpt-4o-mini", temperature=0)
+response = model.invoke(final_prompt.format_messages(input="humid"))
+
+print(response.content)
