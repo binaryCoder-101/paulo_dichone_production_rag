@@ -89,3 +89,22 @@ model = init_chat_model(model="gpt-4o-mini", temperature=0)
 response = model.invoke(final_prompt.format_messages(input="humid"))
 
 print(response.content)
+
+print(final_prompt)
+
+# Reusable Components
+
+system_prompt = ChatPromptTemplate.from_messages([("system", "You are a {role}.")])
+
+user_prompt = ChatPromptTemplate.from_messages([("human", "{question}")])
+
+full_prompt = system_prompt + user_prompt
+
+final = full_prompt.format_messages(role="helpful assistant", question="What is CrewAI?")
+
+print(final)
+
+model = init_chat_model(model="gpt-5.6-sol", temperature=0)
+response = model.invoke(final)
+
+print(response.content)
