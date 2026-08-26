@@ -4,6 +4,9 @@ from langchain_core.output_parsers import (
     PydanticOutputParser,
 )
 from langchain_core.prompts import ChatPromptTemplate
+from langchain_openai import ChatOpenAI
+from pydantic import BaseModel, Field
+from typing import List
 from langchain.chat_models import init_chat_model
 from dotenv import load_dotenv
 
@@ -39,21 +42,59 @@ def demo_json_parser():
     print(f"Result: '{result}' (type: {type(result).__name__})")
     print(f"City: {result['city']}, Country: {result['country']}")
 
+def demo_pydantic_parser():
+    class Recipe(BaseModel):
+        name: str = Field(description="Name of the recipe")
+        ingredients: List[str] = Field(description="List of ingredients")
+        prep_time_minutes: int = Field(description="Preparation time in minutes")
+        difficulty: str = Field(description="easy, medium or hard")
+
+    parser = PydanticOutputParser(pydantic_object=Recipe)
+
+    prompt = ChatPromptTemplate.from_template(
+        "Create a simple recipe for: {dish}\n\n{format_instructions}"
+    ).partial(format_instructions=parser.get_format_instructions())
+
+    chain = prompt | model | parser
+
+    result = chain.invoke({"dish": "prime rib"})
+    print(f"Recipe: {result.name}")
+    print(f"Ingredients: {result.ingredients}")
+    print(f"Prep time: {result.prep_time_minutes} mins")
+    print(f"Difficulty: {result.difficulty}")
+
+    # Type-Checking (Recommended)
+    print(
+        f"\nType check - name is str: {isinstance(result.name, str)}"
+    )
+    print(
+        f"Type check - ingredients is list: {isinstance(result.ingredients, list)}"
+    )
+    print(
+        f"Type check - every ingredient is str: {all(isinstance(item, str) for item in result.ingredients)}"
+    )
+    print(
+        f"\nType check - prep_time is int: {isinstance(result.prep_time_minutes, int)}"
+    )
+    print(
+        f"\nType check - difficulty is str: {isinstance(result.difficulty, str)}"
+    )
+
 if __name__ == "__main__":
     # print("=" * 50)
     # print("Demo 1: String Parser")
     # print("=" * 50)
     # demo_str_parser()
 
-    print("\n" + "=" * 50)
-    print("Demo 2: JSON Parser")
-    print("=" * 50)
-    demo_json_parser()
-
     # print("\n" + "=" * 50)
-    # print("Demo 3: Pydantic Parser")
+    # print("Demo 2: JSON Parser")
     # print("=" * 50)
-    # demo_pydantic_parser()
+    # demo_json_parser()
+
+    print("\n" + "=" * 50)
+    print("Demo 3: Pydantic Parser")
+    print("=" * 50)
+    demo_pydantic_parser()
 
     # print("\n" + "=" * 50)
     # print("Demo 4: Structured Output (Modern)")
