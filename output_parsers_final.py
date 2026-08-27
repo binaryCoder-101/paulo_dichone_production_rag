@@ -6,7 +6,7 @@ from langchain_core.output_parsers import (
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_openai import ChatOpenAI
 from pydantic import BaseModel, Field
-from typing import List
+from typing import List, Optional
 from langchain.chat_models import init_chat_model
 from dotenv import load_dotenv
 
@@ -58,6 +58,7 @@ def demo_pydantic_parser():
     chain = prompt | model | parser
 
     result = chain.invoke({"dish": "prime rib"})
+    
     print(f"Recipe: {result.name}")
     print(f"Ingredients: {result.ingredients}")
     print(f"Prep time: {result.prep_time_minutes} mins")
@@ -80,6 +81,41 @@ def demo_pydantic_parser():
         f"\nType check - difficulty is str: {isinstance(result.difficulty, str)}"
     )
 
+def demo_structured_output():
+     """Modern with_structured_output() method."""
+
+     class TaskExtraction(BaseModel):
+         """Extracted task information."""
+
+         task: str = Field(description="The main task to do")
+         priority: str = Field(description="high, medium, or low")
+         deadline: Optional[str] = Field(description="Deadline if mentioned")
+         assignee: Optional[str] = Field(description="Person assigned if mentioned")
+
+     # Bind schema to model
+     structured_model = model.with_structured_output(TaskExtraction)
+
+     # No need for format instructions - it's automatic
+     prompt = ChatPromptTemplate.from_template("Extract task information from: {text}")
+
+     chain = prompt | structured_model
+
+     texts = [
+         "John needs to finish the report by Friday - it's urgent",
+         "We should update the docs sometime next week",
+         "Critical: Fix the login bug ASAP",
+     ]
+ 
+     print("Task Extractions:")
+     for text in texts:
+         result = chain.invoke({"text": text})
+         print(f"\nInput: {text}")
+         print(f"  Task: {result.task}")
+         print(f"  Priority: {result.priority}")
+         print(f"  Deadline: {result.deadline}")
+         print(f"  Assignee: {result.assignee}")
+
+
 if __name__ == "__main__":
     # print("=" * 50)
     # print("Demo 1: String Parser")
@@ -91,15 +127,15 @@ if __name__ == "__main__":
     # print("=" * 50)
     # demo_json_parser()
 
-    print("\n" + "=" * 50)
-    print("Demo 3: Pydantic Parser")
-    print("=" * 50)
-    demo_pydantic_parser()
-
     # print("\n" + "=" * 50)
-    # print("Demo 4: Structured Output (Modern)")
+    # print("Demo 3: Pydantic Parser")
     # print("=" * 50)
-    # demo_structured_output()
+    # demo_pydantic_parser()
+
+    print("\n" + "=" * 50)
+    print("Demo 4: Structured Output (Modern)")
+    print("=" * 50)
+    demo_structured_output()
 
     # print("\n" + "=" * 50)
     # print("Demo 5: Complex Schema")
