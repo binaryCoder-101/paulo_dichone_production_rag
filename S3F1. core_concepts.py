@@ -6,6 +6,7 @@ from langchain.chat_models import init_chat_model
 
 load_dotenv()
 
+# 
 def demo_basic_chain():
     prompt = ChatPromptTemplate.from_template(
         "You are a helpful assistant. Answer in one sentence: {question}"
