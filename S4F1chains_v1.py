@@ -151,5 +151,5 @@ if __name__ == "__main__":
     # demo_basic_chain()
     # demo_parallel_chain()
     # demo_passthrough_chain()
-    demo_chain_branching()
-    # demo_debbuging()
+    # demo_chain_branching()
+    demo_debbuging()
